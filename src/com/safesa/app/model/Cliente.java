@@ -4,10 +4,54 @@
  */
 package com.safesa.app.model;
 
+import java.time.LocalDate;
+
 /**
  *
  * @author BORIS
  */
-public class Cliente {
+public class Cliente extends Persona{
+    private int clienteID;
+    private LocalDate fechaRegistro;
+    private String dni;
+    
+    public Cliente(String dni, String nombre, String apellidos, String telefono, String email) {
+        super(nombre, apellidos, telefono, email);
+        this.fechaRegistro = LocalDate.now();
+        this.dni = dni;
+    }
+
+    public Cliente() {
+    }
+
+    public int getClienteID() {
+        return clienteID;
+    }
+
+    public void setClienteID(int clienteID) {
+        this.clienteID = clienteID;
+    }
+
+    public void setFechaRegistro(LocalDate fechaRegistro) {
+        this.fechaRegistro = fechaRegistro;
+    }
+    
+
+    public LocalDate getFechaRegistro() {
+        return fechaRegistro;
+    }
+
+    public String getDni() {
+        return dni;
+    }
+
+    public void setDni(String dni) {
+        this.dni = dni;
+    }
+
+    @Override
+    public String toString() {
+        return "clienteID=" + clienteID + super.toString() +", fechaRegistro=" + fechaRegistro + ", dni=" + dni + '}';
+    }
     
 }

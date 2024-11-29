@@ -2,12 +2,12 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
-package com.safesa.app.repository;
+package com.safesa.app.dto;
 
 /**
  *
  * @author BORIS
  */
-public class ProductoRepository {
+public class ProveedorDto {
     
 }

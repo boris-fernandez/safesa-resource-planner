@@ -8,6 +8,29 @@ package com.safesa.app.model;
  *
  * @author BORIS
  */
-public class Proveedor {
+public class Proveedor extends Persona{
+    private int proveedorID;
+    private int ruc;
+
+    public Proveedor(int proveedorID, int ruc, String nombre, String apellidos, String telefono, String email) {
+        super(nombre, apellidos, telefono, email);
+        this.proveedorID = proveedorID;
+        this.ruc = ruc;
+    }
+
+    public Proveedor() {
+    }
+
+    public int getProveedorID() {
+        return proveedorID;
+    }
+
+    public int getRuc() {
+        return ruc;
+    }
+
+    public void setRuc(int ruc) {
+        this.ruc = ruc;
+    } 
     
 }
