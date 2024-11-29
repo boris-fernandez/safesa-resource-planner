@@ -28,11 +28,9 @@ public class ConexionBD {
             return con;
         } catch (ClassNotFoundException e) {
             System.out.println("Error: Driver JDBC no encontrado.");
-            e.printStackTrace();
             return null;
         } catch (SQLException ex) {
             System.out.println("Error al conectar a la base de datos: " + ex.getMessage());
-            ex.printStackTrace();
             return null;
         }
     }
