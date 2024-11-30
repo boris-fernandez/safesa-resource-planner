@@ -5,62 +5,77 @@
 package com.safesa.app.model;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
-
 /**
  *
  * @author BORIS
  */
 public class Movimiento{
     private int movimientoID;
-    private boolean metodoPago;
-    private String descripcion;
+    private String metodoPago;
+    private int cantidad;
+    private double monto;
     private LocalDate fecha;
-    private boolean tipoMovimiento;
+    private String tipoMovimiento;
     private Persona persona;
-    private ArrayList<ItemMovimiento> iteMovimientos = new ArrayList<>();
+    private Producto producto;
 
-    public Movimiento(boolean metodoPago, String descripcion, boolean tipoMovimiento, Persona persona, ArrayList<ItemMovimiento> iteMovimientos) {
+    public Movimiento(int movimientoID, String metodoPago, int cantidad, double monto, LocalDate fecha, String tipoMovimiento, Persona persona, Producto producto) {
+        this.movimientoID = movimientoID;
         this.metodoPago = metodoPago;
-        this.descripcion = descripcion;
-        this.fecha = LocalDate.now();
+        this.cantidad = cantidad;
+        this.monto = monto;
+        this.fecha = fecha;
         this.tipoMovimiento = tipoMovimiento;
         this.persona = persona;
-        this.iteMovimientos = iteMovimientos;
+        this.producto = producto;
     }
 
     public Movimiento() {
     }
 
+    public void setMovimientoID(int movimientoID) {
+        this.movimientoID = movimientoID;
+    }
+
+    public void setFecha(LocalDate fecha) {
+        this.fecha = fecha;
+    }
+
+    public void setPersona(Persona persona) {
+        this.persona = persona;
+    }
+
+    
+    
     public int getMovimientoID() {
         return movimientoID;
     }
 
-    public boolean getMetodoPago() {
+    public String getMetodoPago() {
         return metodoPago;
     }
 
-    public void setMetodoPago(boolean metodoPago) {
+    public void setMetodoPago(String metodoPago) {
         this.metodoPago = metodoPago;
     }
 
-    public String getDescripcion() {
-        return descripcion;
+    public int getCantidad() {
+        return cantidad;
     }
 
-    public void setDescripcion(String descripcion) {
-        this.descripcion = descripcion;
+    public void setCantidad(int cantidad) {
+        this.cantidad = cantidad;
     }
 
     public LocalDate getFecha() {
         return fecha;
     }
 
-    public boolean getTipoMovimiento() {
+    public String getTipoMovimiento() {
         return tipoMovimiento;
     }
 
-    public void setTipoMovimiento(boolean tipoMovimiento) {
+    public void setTipoMovimiento(String tipoMovimiento) {
         this.tipoMovimiento = tipoMovimiento;
     }
 
@@ -68,16 +83,26 @@ public class Movimiento{
         return persona;
     }
 
-    public void setPersona(Persona persona) {
-        this.persona = persona;
+    public Producto getProducto() {
+        return producto;
     }
 
-    public ArrayList<ItemMovimiento> getIteMovimientos() {
-        return iteMovimientos;
+    public void setProducto(Producto producto) {
+        this.producto = producto;
     }
 
-    public void setIteMovimientos(ArrayList<ItemMovimiento> iteMovimientos) {
-        this.iteMovimientos = iteMovimientos;
+    public double getMonto() {
+        return monto;
+    }
+
+    public void setMonto(double monto) {
+        this.monto = monto;
+    }
+
+    
+    @Override
+    public String toString() {
+        return "Movimiento{" + "movimientoID=" + movimientoID + ", metodoPago=" + metodoPago + ", cantidad=" + cantidad + ", fecha=" + fecha + ", tipoMovimiento=" + tipoMovimiento + ", persona=" + persona + ", producto=" + producto + '}';
     }
 
 }

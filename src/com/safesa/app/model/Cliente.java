@@ -14,13 +14,14 @@ public class Cliente extends Persona{
     private int clienteID;
     private LocalDate fechaRegistro;
     private String dni;
-    
-    public Cliente(String dni, String nombre, String apellidos, String telefono, String email) {
-        super(nombre, apellidos, telefono, email);
-        this.fechaRegistro = LocalDate.now();
-        this.dni = dni;
-    }
 
+    public Cliente(int clienteID, LocalDate fechaRegistro, String dni, int personaID, String nombre, String apellidos, String telefono, String email) {
+        super(personaID, nombre, apellidos, telefono, email);
+        this.clienteID = clienteID;
+        this.fechaRegistro = fechaRegistro;
+        this.dni = dni;
+    }  
+    
     public Cliente() {
     }
 

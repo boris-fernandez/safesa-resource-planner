@@ -10,27 +10,38 @@ package com.safesa.app.model;
  */
 public class Proveedor extends Persona{
     private int proveedorID;
-    private int ruc;
+    private String dni;
 
-    public Proveedor(int proveedorID, int ruc, String nombre, String apellidos, String telefono, String email) {
-        super(nombre, apellidos, telefono, email);
+    public Proveedor(int proveedorID, String dni, int personaID, String nombre, String apellidos, String telefono, String email) {
+        super(personaID, nombre, apellidos, telefono, email);
         this.proveedorID = proveedorID;
-        this.ruc = ruc;
+        this.dni = dni;
     }
 
     public Proveedor() {
     }
 
+    public void setProveedorID(int proveedorID) {
+        this.proveedorID = proveedorID;
+    }
+
+    
     public int getProveedorID() {
         return proveedorID;
     }
 
-    public int getRuc() {
-        return ruc;
+    public String getDni() {
+        return dni;
     }
 
-    public void setRuc(int ruc) {
-        this.ruc = ruc;
+    public void setDni(String ruc) {
+        this.dni = ruc;
     } 
+
+    @Override
+    public String toString() {
+        return "Proveedor{" + "roveedorID=" + proveedorID + super.toString() + ", dni=" + dni + '}';
+    }
+    
     
 }

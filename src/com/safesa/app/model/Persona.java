@@ -18,14 +18,15 @@ public abstract class Persona{
     private String telefono;
     private String email;
     private ArrayList<Movimiento> movimientos = new ArrayList<>();
-    
-    public Persona(String nombre, String apellidos, String telefono, String email) {
+
+    public Persona(int personaID, String nombre, String apellidos, String telefono, String email) {
+        this.personaID = personaID;
         this.nombre = nombre;
         this.apellidos = apellidos;
         this.telefono = telefono;
         this.email = email;
     }
-
+ 
     public Persona() {
     }
 

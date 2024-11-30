@@ -43,7 +43,7 @@ public class ProductoDto {
         try{
             PreparedStatement buscar =conectar(query);
             var rs = buscar.executeQuery();
-            if(rs.next()){
+            while(rs.next()){
                 Producto producto = new Producto();
                 producto.setProductoID(rs.getInt("productoId"));
                 producto.setNombre(rs.getString("nombre"));
@@ -106,5 +106,18 @@ public class ProductoDto {
         }
     }
      
+    // Obtener precio producto
+    public double precioProducto(int id) {
+        String query = "SELECT precio FROM Productos WHERE productoId = ?";
+        double precio = 0; 
+
+        try (PreparedStatement buscar = conectar(query)) {
+            buscar.setInt(1, id);
+            var rs = buscar.executeQuery();
+            precio = rs.getDouble("precio"); 
+        } catch (SQLException e) {
+        }
+        return precio;
+    }
      
 }

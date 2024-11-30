@@ -25,10 +25,11 @@ public class ClienteDto {
     }
     
     // Método para agregar un cliente
-    public void agregarCliente(String dni, String nombre, String apellidos,String telefono, String email){
+    public int agregarCliente(String dni, String nombre, String apellidos,String telefono, String email){
         LocalDate fechaRegistro = LocalDate.now();
         String queryPersona = "insert into Personas(nombre, apellidos, telefono, email) values(?,?,?,?)";
         String queryCliente = "insert into Clientes(dni, fechaRegistro, personaId) values(?,?,?)";
+        int personaID = 0;
         try{
             Connection con = ConexionBD.getConexion(); 
             PreparedStatement psPersona  = con.prepareStatement(queryPersona, PreparedStatement.RETURN_GENERATED_KEYS);
@@ -40,7 +41,7 @@ public class ClienteDto {
 
             var rs = psPersona.getGeneratedKeys();
             if(rs.next()){
-                int personaID = rs.getInt(1);
+                personaID = rs.getInt(1);
                 PreparedStatement psCliente = con.prepareStatement(queryCliente);
                 psCliente.setString(1, dni);
                 psCliente.setObject(2, fechaRegistro);
@@ -49,6 +50,7 @@ public class ClienteDto {
             }
         } catch(SQLException e){
         }
+        return personaID;
     }
 
     //Obtener todos los clientes
