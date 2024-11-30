@@ -3,8 +3,7 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Main.java to edit this template
  */
 package com.safesa.app.main;
-
-import com.safesa.app.dto.ProductoDto;
+import com.safesa.app.view.MenuOpciones;
 
 /**
  *
@@ -17,8 +16,8 @@ public class Main {
      */
     public static void main(String[] args) {
         // TODO code application logic here
-        var producto = new ProductoDto();
-        producto.eliminarProducto(1);
+        MenuOpciones mo = new MenuOpciones();
+        mo.setVisible(true);
     }
     
 }
