@@ -47,8 +47,10 @@ public class ProductoDto {
                 Producto producto = new Producto();
                 producto.setProductoID(rs.getInt("productoId"));
                 producto.setNombre(rs.getString("nombre"));
+                producto.setStock(rs.getInt("stock"));
                 producto.setDescripcion(rs.getString("descripcion"));
                 producto.setPrecio(rs.getDouble("precio")); 
+                producto.setDescripcion(rs.getString("descripcion"));
                 productos.add(producto);
             }
         }catch(SQLException e){
@@ -57,7 +59,7 @@ public class ProductoDto {
     }
      
     //Actualizar producto
-     public void actualizarProducto(String nombre, String descripcion,double precio, int id){
+     public void actualizarProducto(String nombre,String descripcion,double precio, int id){
         String query  = """
                         update Productos 
                         set nombre = ?,
@@ -77,19 +79,24 @@ public class ProductoDto {
     }
      
     //Buscar producto
-    public Producto buscarPoducto(String nombre){
-        String query = "select * from Productos where nombre = ?";
-        var producto = new Producto();
-         
-        try{
-           PreparedStatement buscar =conectar(query);  
-           buscar.setString(1, nombre);
-           var rs = buscar.executeQuery();
-           producto.setProductoID(rs.getInt("productoId"));
-           producto.setNombre(rs.getString("nombre"));
-           producto.setDescripcion(rs.getString("descripcion"));
-           producto.setPrecio(rs.getDouble("precio")); 
-        }catch(SQLException e){
+    public Producto buscarProducto(String nombre) {
+        String query = "SELECT * FROM Productos WHERE nombre = ?";
+        Producto producto = null; 
+
+        try {
+            PreparedStatement buscar = conectar(query);  
+            buscar.setString(1, nombre);
+            var rs = buscar.executeQuery();
+            
+            if (rs.next()) {
+                producto = new Producto(); 
+                producto.setProductoID(rs.getInt("productoId"));
+                producto.setNombre(rs.getString("nombre"));
+                producto.setDescripcion(rs.getString("descripcion"));
+                producto.setPrecio(rs.getDouble("precio"));
+                producto.setStock(rs.getInt("stock"));  
+            }
+        } catch (SQLException e) {
         }
         return producto;
     }
