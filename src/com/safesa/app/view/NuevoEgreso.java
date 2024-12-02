@@ -5,7 +5,6 @@
 package com.safesa.app.view;
 
 import com.safesa.app.controller.MovimientoController;
-import com.safesa.app.controller.ProductoController;
 import com.safesa.app.dto.ProductoDto;
 import java.util.ArrayList;
 
@@ -356,7 +355,7 @@ public class NuevoEgreso extends javax.swing.JFrame {
 
     private void btnmMostrarMontoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnmMostrarMontoActionPerformed
         // TODO add your handling code here:
-        movimientoController.mostrarMonto(cbxNombreProd, txtCantidad, txtMonto);
+        movimientoController.mostrarEgresoMonto(cbxNombreProd, txtCantidad, txtMonto);
     }//GEN-LAST:event_btnmMostrarMontoActionPerformed
 
     private void btnAgregarEgresoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAgregarEgresoActionPerformed

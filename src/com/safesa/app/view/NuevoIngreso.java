@@ -258,7 +258,7 @@ public class NuevoIngreso extends javax.swing.JFrame {
 
     private void btnHistMovimientoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnHistMovimientoActionPerformed
         // TODO add your handling code here:
-        controller.agregarIngreso(cbxNombreProd, txtCantidad, txtMetodPago, txtDNI, txtNombre, txtApellidos1, txtTelefono,txtEmail,txtMetodPago);
+        controller.agregarIngreso(cbxNombreProd, txtCantidad, txtMonto, txtDNI, txtNombre, txtApellidos1, txtTelefono,txtEmail,txtMetodPago);
     }//GEN-LAST:event_btnHistMovimientoActionPerformed
 
     private void btnDatosActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnDatosActionPerformed
@@ -268,7 +268,7 @@ public class NuevoIngreso extends javax.swing.JFrame {
 
     private void btnMontoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnMontoActionPerformed
         // TODO add your handling code here:
-        controller.mostrarMonto(cbxNombreProd, txtCantidad, txtMonto);
+        controller.mostrarIngresoMonto(cbxNombreProd, txtCantidad, txtMonto);
     }//GEN-LAST:event_btnMontoActionPerformed
 
     private void btnAgregarIngresoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAgregarIngresoActionPerformed

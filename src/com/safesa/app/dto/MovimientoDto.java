@@ -20,7 +20,7 @@ import java.util.ArrayList;
  * @author BORIS
  */
 public class MovimientoDto {
-    private ClienteDto clienteDto;
+    private final ClienteDto clienteDto;
    
     public MovimientoDto(){
         clienteDto = new ClienteDto();
@@ -33,11 +33,11 @@ public class MovimientoDto {
     
     // Agregar ingreso
     public void agregarIngreso(String nombreProducto, int cantidad, 
-                            String dni, String nombre, String apellidos, String telefono, String email, String metodoPago) {
+                                String dni, String nombre, String apellidos, String telefono, String email, String metodoPago) {
         int personaID = clienteDto.obtenerIdCliente(dni);
         if (personaID == -1) { 
             var cliente = new ClienteDto();
-            personaID = cliente.agregarCliente(dni, nombre, apellidos, telefono,email);
+            personaID = cliente.agregarCliente(dni, nombre, apellidos, telefono, email);
         }
 
         var producto = new ProductoDto();
@@ -46,105 +46,105 @@ public class MovimientoDto {
         LocalDate fecha = LocalDate.now();
         String tipo = "Ingreso";
         Double monto = cantidad * precioProducto;
-        
-        String query = "INSERT INTO Movimientos(fecha, personaId, productoId, metodoPago, monto, cantidad, tipoMovimiento) VALUES (?,?,?,?,?,?,?)";
-        try (PreparedStatement buscar = conectar(query)) {
-            buscar.setDate(1, java.sql.Date.valueOf(fecha));
-            buscar.setInt(2, personaID);
-            buscar.setInt(3, idProducto);
-            buscar.setString(4, metodoPago);
-            buscar.setDouble(5, monto);
-            buscar.setInt(6, cantidad);
-            buscar.setString(7, tipo);
-            var rs = buscar.executeUpdate(); 
+
+        String queryMovimiento = "INSERT INTO Movimientos(fecha, personaId, productoId, metodoPago, monto, cantidad, tipoMovimiento) VALUES (?,?,?,?,?,?,?)";
+        try {
+            PreparedStatement insertarMovimiento = conectar(queryMovimiento);
+            insertarMovimiento.setDate(1, java.sql.Date.valueOf(fecha));
+            insertarMovimiento.setInt(2, personaID);
+            insertarMovimiento.setInt(3, idProducto);
+            insertarMovimiento.setString(4, metodoPago);
+            insertarMovimiento.setDouble(5, monto);
+            insertarMovimiento.setInt(6, cantidad);
+            insertarMovimiento.setString(7, tipo);
+            insertarMovimiento.executeUpdate();
+
+            String queryActualizarStock = "UPDATE Productos SET stock = stock - ? WHERE productoId = ?";
+            PreparedStatement actualizarStock = conectar(queryActualizarStock);
+            actualizarStock.setInt(1, cantidad);
+            actualizarStock.setInt(2, idProducto);
+            actualizarStock.executeUpdate();
         } catch (SQLException e) {
         }
     }
     
     //Agregar egreso
     public void agregarEgreso(String nombreProducto, int cantidad, 
-                            String dni, String nombre, String apellidos, String telefono, String email, String metodoPago){
+                          String dni, String nombre, String apellidos, 
+                          String telefono, String email, String metodoPago) {
         var proveedor = new ProveedorDto();
         int personaID = proveedor.obtenerIdProveedor(dni);
         if (personaID == -1) { 
             var cliente = new ClienteDto();
-            personaID = cliente.agregarCliente(dni, nombre, apellidos, telefono,email);
+            personaID = cliente.agregarCliente(dni, nombre, apellidos, telefono, email);
         }
+
         var producto = new ProductoDto();
         double precioProducto = producto.precioProducto(nombreProducto);
         int idProducto = producto.obtenerIdProducto(nombreProducto);
         LocalDate fecha = LocalDate.now();
         String tipo = "Egreso";
         Double monto = cantidad * precioProducto;
-        String query = "INSERT INTO Movimientos(fecha, personaId, productoId, metodoPago, monto, cantidad, tipoMovimiento) VALUES (?,?,?,?,?,?,?)";
-        
-        try (PreparedStatement buscar = conectar(query)) {
-            buscar.setDate(1, java.sql.Date.valueOf(fecha));
-            buscar.setInt(2, personaID);
-            buscar.setInt(3, idProducto);
-            buscar.setString(4, metodoPago);
-            buscar.setDouble(5, monto);
-            buscar.setInt(6, cantidad);
-            buscar.setString(7, tipo);
-            var rs = buscar.executeUpdate(); 
+
+        String queryInsert = "INSERT INTO Movimientos(fecha, personaId, productoId, metodoPago, monto, cantidad, tipoMovimiento) VALUES (?,?,?,?,?,?,?)";
+        String queryUpdateStock = "UPDATE Productos SET stock = stock + ? WHERE productoId = ?";
+
+        try {
+            PreparedStatement insertar = conectar(queryInsert);
+            insertar.setDate(1, java.sql.Date.valueOf(fecha));
+            insertar.setInt(2, personaID);
+            insertar.setInt(3, idProducto);
+            insertar.setString(4, metodoPago);
+            insertar.setDouble(5, monto);
+            insertar.setInt(6, cantidad);
+            insertar.setString(7, tipo);
+            insertar.executeUpdate();
+
+            PreparedStatement actualizarStock = conectar(queryUpdateStock);
+            actualizarStock.setInt(1, cantidad);
+            actualizarStock.setInt(2, idProducto);
+            actualizarStock.executeUpdate();
+
         } catch (SQLException e) {
         }
     }
-    
-    
+
     // Obtener todos los Movimientos
     public ArrayList<SimpleEntry<Movimiento, Cliente>> obtenerMovimientos() {
-    String query = """
-                SELECT m.movimientoId, Pro.nombre AS productoNombre, m.cantidad, m.monto, 
-                                       per.nombre AS personaNombre, c.dni, m.tipoMovimiento, 
-                                       per.nombre AS proveedorNombre
-                                FROM Movimientos m
-                                INNER JOIN Productos Pro ON m.productoId = Pro.productoId
-                                INNER JOIN Personas per ON per.personaId = m.personaId
-                                LEFT JOIN Clientes c ON per.personaId = c.personaId
-                                LEFT JOIN Proveedores p ON per.personaId = p.personaId""";
-    
-    ArrayList<SimpleEntry<Movimiento, Cliente>> movimientos = new ArrayList<>();
+        String query = """
+                    SELECT m.movimientoId, Pro.nombre AS productoNombre, m.cantidad, m.monto, 
+                                           per.nombre AS personaNombre, c.dni, m.tipoMovimiento, 
+                                           per.nombre AS proveedorNombre,
+                                           fecha
+                                    FROM Movimientos m
+                                    INNER JOIN Productos Pro ON m.productoId = Pro.productoId
+                                    INNER JOIN Personas per ON per.personaId = m.personaId
+                                    LEFT JOIN Clientes c ON per.personaId = c.personaId
+                                    LEFT JOIN Proveedores p ON per.personaId = p.personaId""";
 
-    try { 
-        PreparedStatement buscar = conectar(query);
-        var rs = buscar.executeQuery();
-        while (rs.next()) {
-            Movimiento movimiento = new Movimiento();
-            Cliente cliente = new Cliente();
-            Producto producto = new Producto();
-            movimiento.setMovimientoID(rs.getInt("movimientoId"));
-            producto.setNombre(rs.getString("productoNombre"));
-            movimiento.setCantidad(rs.getInt("cantidad"));
-            movimiento.setMonto(rs.getDouble("monto"));
-            movimiento.setTipoMovimiento(rs.getString("tipoMovimiento"));
-            cliente.setNombre(rs.getString("personaNombre")); 
-            cliente.setDni(rs.getString("dni"));
-            movimiento.setProducto(producto);
-            movimientos.add(new SimpleEntry<>(movimiento, cliente));
-        }
-    } catch (SQLException e) {
-    }
-    return movimientos;
-}
+        ArrayList<SimpleEntry<Movimiento, Cliente>> movimientos = new ArrayList<>();
 
-
-    //Actualizar Movimiento
-    public void actualizarMovimiento(String metodoPago, String tipoMovimiento, int id) {
-        String query = "UPDATE Movimientos SET metodoPago = ?, tipoMovimiento = ? WHERE movimientoId = ?";
-        Movimiento movimiento = new Movimiento();
-        
-        try{
+        try { 
             PreparedStatement buscar = conectar(query);
-            buscar.setString(1, metodoPago);
-            buscar.setString(2, tipoMovimiento);
-            buscar.setInt(3, id);
-            var rs = buscar.executeUpdate();
-            movimiento.setMovimientoID(id);
-            movimiento.setMetodoPago(metodoPago);
-            movimiento.setTipoMovimiento(tipoMovimiento);
+            var rs = buscar.executeQuery();
+            while (rs.next()) {
+                Movimiento movimiento = new Movimiento();
+                Cliente cliente = new Cliente();
+                Producto producto = new Producto();
+                movimiento.setMovimientoID(rs.getInt("movimientoId"));
+                movimiento.setFecha(rs.getDate("fecha").toLocalDate());
+                producto.setNombre(rs.getString("productoNombre"));
+                movimiento.setCantidad(rs.getInt("cantidad"));
+                movimiento.setMonto(rs.getDouble("monto"));
+                movimiento.setTipoMovimiento(rs.getString("tipoMovimiento"));
+                cliente.setNombre(rs.getString("personaNombre")); 
+                cliente.setDni(rs.getString("dni"));
+                movimiento.setProducto(producto);
+                movimientos.add(new SimpleEntry<>(movimiento, cliente));
+            }
         } catch (SQLException e) {
         }
+        return movimientos;
     }
 
     //Eliminar Movimineto
@@ -159,66 +159,108 @@ public class MovimientoDto {
         }
     }
     
-   public SimpleEntry<Movimiento, Object> buscarMovimiento(String dni) {
+    //Buscar Movimiento por dni
+    public SimpleEntry<Movimiento, Object> buscarMovimiento(String dni) {
         String query = """
                     SELECT m.movimientoId, Pro.nombre AS productoNombre, m.cantidad, m.monto, 
                            per.nombre AS personaNombre, c.dni, m.tipoMovimiento, 
-                           per.nombre AS proveedorNombre
+                           per.nombre AS proveedorNombre,
+                           fecha
                     FROM Movimientos m
                     INNER JOIN Productos Pro ON m.productoId = Pro.productoId
                     INNER JOIN Personas per ON per.personaId = m.personaId
                     LEFT JOIN Clientes c ON per.personaId = c.personaId
                     LEFT JOIN Proveedores p ON per.personaId = p.personaId
-                    WHERE c.dni = ?;
+                    WHERE c.dni = ? or p.dni = ?;
                 """;
 
         SimpleEntry<Movimiento, Object> movimientoEncontrado = null; 
 
         try {
             PreparedStatement buscar = conectar(query);
-            buscar.setString(1, dni);  // Usar el dni como parámetro
+            buscar.setString(1, dni);
+            buscar.setString(2, dni); 
             var rs = buscar.executeQuery();
 
-            if (rs.next()) {  // Solo obtenemos el primer resultado
+            if (rs.next()) {
                 Movimiento movimiento = new Movimiento();
-                Object persona = null;  // Puede ser un Cliente o un Proveedor
+                Object persona = null;
                 Producto producto = new Producto();
 
-                // Set Movimiento attributes
                 movimiento.setMovimientoID(rs.getInt("movimientoId"));
                 producto.setNombre(rs.getString("productoNombre"));
                 movimiento.setCantidad(rs.getInt("cantidad"));
                 movimiento.setMonto(rs.getDouble("monto"));
                 movimiento.setTipoMovimiento(rs.getString("tipoMovimiento"));
-
-                // Verificar si es un Cliente o un Proveedor y asignar
+                movimiento.setFecha(rs.getDate("fecha").toLocalDate());
                 String proveedorNombre = rs.getString("proveedorNombre");
                 if (proveedorNombre != null) {
-                    // Es un Proveedor (Egreso)
                     Proveedor proveedor = new Proveedor();
                     proveedor.setNombre(proveedorNombre);
                     persona = proveedor;
                 } else {
-                    // Es un Cliente (Ingreso)
                     Cliente cliente = new Cliente();
                     cliente.setNombre(rs.getString("personaNombre"));
                     cliente.setDni(rs.getString("dni"));
                     persona = cliente;
                 }
-
-                // Asignar Producto al Movimiento
                 movimiento.setProducto(producto);
-
-                // Guardar el movimiento encontrado y su asociado (Cliente o Proveedor)
                 movimientoEncontrado = new SimpleEntry<>(movimiento, persona);
             }
         } catch (SQLException e) {
-            e.printStackTrace();
         }
-
         return movimientoEncontrado;
     }
-    
+   
+   //Obtener el monto total de ingreso
+   public double montoTotalIngreso(){
+        String query = "SELECT SUM(monto) AS [MontoIngreso] FROM Movimientos WHERE tipoMovimiento = 'Ingreso'";
+        double totalIngreso = 0;
+        try{
+            PreparedStatement buscar = conectar(query);
+            var rs = buscar.executeQuery();
+            if(rs.next()){
+                totalIngreso = rs.getDouble("MontoIngreso");
+            }
+        }catch(SQLException e){
+        }
+        return totalIngreso;
+   }
+   
+   //Obtener el monto total de egreso
+   public double montoTotalEgreso(){
+        String query = "SELECT SUM(monto) AS [MontoEgreso] FROM Movimientos WHERE tipoMovimiento = 'Egreso'";
+        double totalIngreso = 0;
+        try{
+            PreparedStatement buscar = conectar(query);
+            var rs = buscar.executeQuery();
+            if(rs.next()){
+                totalIngreso = rs.getDouble("MontoEgreso");
+            }
+        }catch(SQLException e){
+        }
+        return totalIngreso;
+   }
+   
+   //Obtener el monto total general
+   public double montoTotalGenera(){
+        String query = """
+                       SELECT 
+                           (SUM(CASE WHEN tipoMovimiento = 'Ingreso' THEN monto ELSE 0 END) -
+                            SUM(CASE WHEN tipoMovimiento = 'Egreso' THEN monto ELSE 0 END)) AS TotalGeneral
+                       FROM Movimientos;""";
+        double totalIngreso = 0;
+        try{
+            PreparedStatement buscar = conectar(query);
+            var rs = buscar.executeQuery();
+            if(rs.next()){
+                totalIngreso = rs.getDouble("TotalGeneral");
+            }
+        }catch(SQLException e){
+        }
+        return totalIngreso;
+   }
+   
     
     
 }

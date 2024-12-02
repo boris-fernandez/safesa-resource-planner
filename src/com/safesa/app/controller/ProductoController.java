@@ -25,10 +25,10 @@ public class ProductoController{
     }
     
     public void agregarNuevoProducto(JTextField txtnombre, JTextField txtprecio, JTextField txtstock, JTextArea txtdescripcion){
-        String nombre = txtnombre.getText().trim();
-        String precioS = txtprecio.getText().trim();
-        String stockS = txtstock.getText().trim();
-        String descripcion = txtdescripcion.getText().trim();
+        String nombre = txtnombre.getText();
+        String precioS = txtprecio.getText();
+        String stockS = txtstock.getText();
+        String descripcion = txtdescripcion.getText();
         
         if (precioS.isEmpty() || stockS.isEmpty()) {
             JOptionPane.showMessageDialog(null,

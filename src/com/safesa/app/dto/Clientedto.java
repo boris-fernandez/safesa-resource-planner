@@ -3,8 +3,6 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
 package com.safesa.app.dto;
-//hola
-
 import com.safesa.app.config.ConexionBD;
 import com.safesa.app.model.Cliente;
 import java.sql.Connection;
@@ -106,7 +104,7 @@ public class ClienteDto {
         String query = "SELECT c.clienteId, nombre, apellidos, telefono, email, dni, fechaRegistro " +
                        "FROM Personas p INNER JOIN Clientes c ON p.personaId = c.personaId " +
                        "WHERE c.dni = ?";
-        Cliente cliente = null;  // Inicializar cliente como null
+        Cliente cliente = null;
         try{
             PreparedStatement buscar =conectar(query);   
             buscar.setString(1, dni);
@@ -122,6 +120,7 @@ public class ClienteDto {
                     cliente.setFechaRegistro(rs.getDate("fechaRegistro").toLocalDate());
                 }
         } catch (SQLException e) {
+            e.printStackTrace();  
         }
         return cliente;
     }
@@ -136,6 +135,22 @@ public class ClienteDto {
         var rowsAffected = eliminar.executeUpdate();
         } catch (SQLException e) {
         }
+    }
+    
+    //Buscar dni
+    public boolean buscarDni(String dni){
+        String query = "select dni from Clientes where dni = ? ";
+        boolean verificar = false;
+        try{
+            PreparedStatement eliminar = conectar(query);
+            eliminar.setString(1, dni);
+            var rs = eliminar.executeQuery();
+            if(rs.next()){
+                verificar = true;
+            }
+        }catch(SQLException e){
+        }
+        return verificar;
     }
     
     //Obtener el ID de un cliente si ya existe, usando el DNI

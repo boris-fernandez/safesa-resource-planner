@@ -22,7 +22,7 @@ public class ProveedorDto {
         return  con.prepareStatement(query);
     }
     
-    // Método para agregar un proveedor
+    //Agregar un proveedor
     public int agregarProveedor(String dni, String nombre, String apellidos,String telefono, String email){
         String queryPersona = "insert into Personas(nombre, apellidos, telefono, email) values(?,?,?,?)";
         String queryProveedor = "insert into Proveedores(dni, personaId) values(?,?)";
@@ -45,7 +45,6 @@ public class ProveedorDto {
                 psCliente.executeUpdate(); 
             }
         } catch(SQLException e){
-            e.printStackTrace();
         }
         return proveedorId;
     }
@@ -76,7 +75,7 @@ public class ProveedorDto {
     }
     
     //Actualizar proveedor
-    public void actualizarProveedor(String nombre, String apellidos,String telefono, String email, int id){
+    public void actualizarProveedor(String nombre, String apellidos,String telefono, String email, String id){
         String query  = """
                        UPDATE Personas 
                        SET nombre = ?,
@@ -91,12 +90,13 @@ public class ProveedorDto {
             buscar.setString(2, apellidos);
             buscar.setString(3, telefono);
             buscar.setString(4, email);
-            buscar.setInt(5, id);
+            buscar.setString(5, id);
             var rs = buscar.executeUpdate();
         }catch(SQLException e){
         }
     }
     
+    //Buscar proveedor
     public Proveedor buscarProveedor(String dni) {
         String query = "SELECT c.proveedorId, p.nombre, p.apellidos, p.telefono, p.email, c.dni " +
                        "FROM Personas p INNER JOIN Proveedores c ON p.personaId = c.personaId " +
@@ -115,7 +115,7 @@ public class ProveedorDto {
                 proveedor.setDni(rs.getString("dni"));
             }
         } catch (SQLException e) {
-            e.printStackTrace();
+            e.printStackTrace();  
         }
         return proveedor;
     }
@@ -127,9 +127,25 @@ public class ProveedorDto {
         try {
             PreparedStatement eliminar = conectar(query);
             eliminar.setInt(1, id);
-        var rowsAffected = eliminar.executeUpdate();
+            var rs = eliminar.executeUpdate();
         } catch (SQLException e) {
         }
+    }
+    
+    //Buscar dni
+    public boolean buscarDni(String dni){
+        String query = "select dni from Proveedores where dni = ?";
+        boolean verificar = false;
+        try{
+            PreparedStatement eliminar = conectar(query);
+            eliminar.setString(1, dni);
+            var rs = eliminar.executeQuery();
+            if(rs.next()){
+                verificar = true;
+            }
+        }catch(SQLException e){
+        }
+        return verificar;
     }
     
     //Obtener el ID de un cliente si ya existe, usando el DNI
