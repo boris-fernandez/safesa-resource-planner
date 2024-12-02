@@ -375,13 +375,13 @@ public class MenuOpciones extends javax.swing.JFrame {
     }//GEN-LAST:event_btnInventarioActionPerformed
 
     private void btnEgresosActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEgresosActionPerformed
-        Egreso egre = new Egreso();
+        NuevoEgreso egre = new NuevoEgreso();
         egre.setVisible(true);
         setVisible(false);
     }//GEN-LAST:event_btnEgresosActionPerformed
 
     private void btnIngresosActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnIngresosActionPerformed
-        Ingreso ingre = new Ingreso();
+        NuevoIngreso ingre = new NuevoIngreso();
         ingre.setVisible(true);
         setVisible(false);
     }//GEN-LAST:event_btnIngresosActionPerformed

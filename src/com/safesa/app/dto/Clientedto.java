@@ -102,26 +102,30 @@ public class ClienteDto {
     }
     
     //Buscar cliente
-    public Cliente buscarCliente(int dni){
+    public Cliente buscarCliente(String dni) {
         String query = "SELECT c.clienteId, nombre, apellidos, telefono, email, dni, fechaRegistro " +
-               "FROM Personas p INNER JOIN Clientes c ON p.personaId = c.personaId " +
-               "WHERE c.dni = ?";
-        Cliente cliente = new Cliente();
+                       "FROM Personas p INNER JOIN Clientes c ON p.personaId = c.personaId " +
+                       "WHERE c.dni = ?";
+        Cliente cliente = null;  // Inicializar cliente como null
         try{
-            PreparedStatement buscar =conectar(query);
-            buscar.setInt(1, dni);
+            PreparedStatement buscar =conectar(query);   
+            buscar.setString(1, dni);
             var rs = buscar.executeQuery();
-            cliente.setClienteID(rs.getInt("clienteId"));
-            cliente.setNombre(rs.getString("nombre"));
-            cliente.setApellidos(rs.getString("apellidos"));
-            cliente.setTelefono(rs.getString("telefono"));
-            cliente.setEmail(rs.getString("email"));
-            cliente.setDni(rs.getString("dni"));
-            cliente.setFechaRegistro(rs.getDate("fechaRegistro").toLocalDate());
-        }catch(SQLException e){
+            if (rs.next()) {
+                    cliente = new Cliente();
+                    cliente.setClienteID(rs.getInt("clienteId"));
+                    cliente.setNombre(rs.getString("nombre"));
+                    cliente.setApellidos(rs.getString("apellidos"));
+                    cliente.setTelefono(rs.getString("telefono"));
+                    cliente.setEmail(rs.getString("email"));
+                    cliente.setDni(rs.getString("dni"));
+                    cliente.setFechaRegistro(rs.getDate("fechaRegistro").toLocalDate());
+                }
+        } catch (SQLException e) {
         }
         return cliente;
     }
+
     
     //Eliminar cliente
     public void eliminarClinete(int id){
@@ -133,4 +137,20 @@ public class ClienteDto {
         } catch (SQLException e) {
         }
     }
+    
+    //Obtener el ID de un cliente si ya existe, usando el DNI
+    int obtenerIdCliente(String dni) {
+        String query = "SELECT personaId FROM Clientes WHERE dni = ?";
+        try{
+            PreparedStatement stmt = conectar(query);
+            stmt.setString(1, dni);
+            var rs = stmt.executeQuery();
+            if (rs.next()) {
+                return rs.getInt("personaId");
+            }
+        } catch (SQLException e) {
+        }
+        return -1; 
+    }
+    
 }

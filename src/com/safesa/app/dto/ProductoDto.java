@@ -36,7 +36,7 @@ public class ProductoDto {
         }
     }
      
-     //Obtener todos los productos
+     //Obtener todos los productos con todas sus caracteristicas
      public ArrayList<Producto> listaProducto(){
         String query = "select * from Productos";
         ArrayList<Producto> productos = new ArrayList<>();
@@ -54,6 +54,22 @@ public class ProductoDto {
                 productos.add(producto);
             }
         }catch(SQLException e){
+        }
+        return productos;
+    }
+     
+    //Obtener todos los productos por nombre
+    public ArrayList<String> listaProductoPorNombre() {
+        String query = "SELECT nombre FROM Productos";
+        ArrayList<String> productos = new ArrayList<>();
+        try{
+            PreparedStatement buscar = conectar(query);
+            var rs = buscar.executeQuery();
+            while (rs.next()) {
+                String nombre = rs.getString("nombre");
+                productos.add(nombre);
+            }
+        } catch (SQLException e) {
         }
         return productos;
     }
@@ -78,14 +94,14 @@ public class ProductoDto {
         }
     }
      
-    //Buscar producto
-    public Producto buscarProducto(String nombre) {
-        String query = "SELECT * FROM Productos WHERE nombre = ?";
+    //Buscar producto por nombre
+    public Producto buscarProductoPorNombre(String nombre) {
+        String query = "SELECT * FROM Productos WHERE nombre like ?";
         Producto producto = null; 
 
         try {
             PreparedStatement buscar = conectar(query);  
-            buscar.setString(1, nombre);
+            buscar.setString(1, "%" + nombre + "%");
             var rs = buscar.executeQuery();
             
             if (rs.next()) {
@@ -102,29 +118,81 @@ public class ProductoDto {
     }
     
     //Eliminar producto
-    public void eliminarProducto(int id){
-        String query = "delete Productos where productoId = ?";
-        
-        try{
-            PreparedStatement buscar =conectar(query);
-            buscar.setInt(1, id);
-            var rs = buscar.executeUpdate();
-        }catch(SQLException e){
+    public void eliminarProducto(int id) {
+        String queryEliminarMovimientos = "DELETE FROM Movimientos WHERE productoId = ?";
+
+        try {
+            PreparedStatement eliminarMovimientos = conectar(queryEliminarMovimientos);
+            eliminarMovimientos.setInt(1, id);
+            eliminarMovimientos.executeUpdate();
+            String queryEliminarProducto = "DELETE FROM Productos WHERE productoID = ?";
+            PreparedStatement eliminarProducto = conectar(queryEliminarProducto);
+            eliminarProducto.setInt(1, id);
+            int filasAfectadas = eliminarProducto.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
         }
     }
+
      
     // Obtener precio producto
-    public double precioProducto(int id) {
-        String query = "SELECT precio FROM Productos WHERE productoId = ?";
-        double precio = 0; 
+    public double precioProducto(String nombre) {
+        String query = "SELECT precio FROM Productos WHERE nombre = ?";
+        double precio = 0;
 
-        try (PreparedStatement buscar = conectar(query)) {
-            buscar.setInt(1, id);
+        try {
+            PreparedStatement buscar = conectar(query);
+            buscar.setString(1, nombre);
             var rs = buscar.executeQuery();
-            precio = rs.getDouble("precio"); 
+            if (rs.next()) {
+                precio = rs.getDouble("precio");
+            } else {
+                System.out.println("Producto no encontrado.");
+            }
         } catch (SQLException e) {
         }
         return precio;
     }
-     
+
+    
+    
+    // Obtener ID del producto por nombre
+    public int obtenerIdProducto(String nombre) {
+        String query = "SELECT productoId FROM Productos WHERE nombre = ?";
+        int productId = 0;
+
+        try (PreparedStatement buscar = conectar(query)) {
+            buscar.setString(1, nombre);
+            var rs = buscar.executeQuery();
+
+            if (rs.next()) {
+                productId = rs.getInt("productoId");
+            } else {
+                System.out.println("Producto no encontrado.");
+            }
+        } catch (SQLException e) {
+        }
+
+        return productId;
+    }     
+    
+    public int obtenerStockProducto(String nombre) {
+        String query = "SELECT stock FROM Productos WHERE nombre = ?";
+        int stock = 0;
+
+        try (PreparedStatement buscar = conectar(query)) {
+            buscar.setString(1, nombre);
+            var rs = buscar.executeQuery();
+
+            if (rs.next()) {
+                stock = rs.getInt("stock");
+            } else {
+                System.out.println("Producto no encontrado.");
+            }
+        } catch (SQLException e) {
+        }
+
+        return stock;
+    }   
+    
 }

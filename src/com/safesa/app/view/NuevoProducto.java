@@ -236,17 +236,8 @@ public class NuevoProducto extends javax.swing.JFrame {
     }//GEN-LAST:event_btnRegresarActionPerformed
 
     private void btnInventarioActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnInventarioActionPerformed
-        String nombre = txtNombre.getText().trim();
-        double precio = Double.parseDouble(txtPrecio.getText().trim());
-        int stock = Integer.parseInt(txtStock.getText().trim());
-        String descripcion = txtDescripcion.getText().trim();
-        
         var productoController = new ProductoController();
-        productoController.agregarNuevoProducto(nombre, precio, stock, descripcion);
-        txtNombre.setText("");
-        txtPrecio.setText("");
-        txtStock.setText("");
-        txtDescripcion.setText("");
+        productoController.agregarNuevoProducto(txtNombre, txtPrecio, txtStock, txtDescripcion);
     }//GEN-LAST:event_btnInventarioActionPerformed
 
     private void btnAgregarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAgregarActionPerformed

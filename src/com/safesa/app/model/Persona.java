@@ -74,14 +74,14 @@ public abstract class Persona{
         this.movimientos = movimientos;
     }
 
-    public void validarEmail(String email){
+    public boolean validarEmail(String email){
         var consultaApi = new ConsultaApi();
         VerificarEmailDTO verificar = consultaApi.verificarEmail(email);
+      
         if (verificar.emailRiskScore() > 79 && verificar.temporaryEmail()) {
-            JOptionPane.showMessageDialog(null, """
-                                                El email es riesgoso o temporal.
-                                                      Intenta con otro""");
+            return false;
         } 
+        return true;
     }
 
     @Override

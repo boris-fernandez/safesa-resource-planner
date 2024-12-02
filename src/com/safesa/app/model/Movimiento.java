@@ -45,8 +45,6 @@ public class Movimiento{
         this.persona = persona;
     }
 
-    
-    
     public int getMovimientoID() {
         return movimientoID;
     }

@@ -24,16 +24,54 @@ public class ProductoController{
         productoDto = new ProductoDto();
     }
     
-    public void agregarNuevoProducto(String nombreIngresado, double precioIngresado, int stockIngresado, String descripcionIngresado){
-        String nombre = nombreIngresado;
-        double precio = precioIngresado;
-        int stock = stockIngresado;
-        String descripcion = descripcionIngresado;
+    public void agregarNuevoProducto(JTextField txtnombre, JTextField txtprecio, JTextField txtstock, JTextArea txtdescripcion){
+        String nombre = txtnombre.getText().trim();
+        String precioS = txtprecio.getText().trim();
+        String stockS = txtstock.getText().trim();
+        String descripcion = txtdescripcion.getText().trim();
         
-        productoDto.agregarProducto(nombre, descripcion, precio, stock);
-        JOptionPane.showMessageDialog(null,
+        if (precioS.isEmpty() || stockS.isEmpty()) {
+            JOptionPane.showMessageDialog(null,
+                    "Los campos precio y stock no pueden estar vacíos",
+                    "Error de validación",
+                    JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+        double precio = Double.parseDouble(precioS);
+        int stock = Integer.parseInt(stockS);
+        if (nombre.isEmpty()) {
+            JOptionPane.showMessageDialog(null,
+                    "El campo nombre no debe estar vacio",
+                    "Error de validación",
+                    JOptionPane.WARNING_MESSAGE);
+        }
+        else if (precio <= 0) {
+            JOptionPane.showMessageDialog(null,
+                    "El campo precio debe ser mayor a 0",
+                    "Error de validación",
+                    JOptionPane.WARNING_MESSAGE);
+        }
+        else if (stock <= 0) {
+            JOptionPane.showMessageDialog(null,
+                    "El campo stock debe ser mayor a 0",
+                    "Error de validación",
+                    JOptionPane.WARNING_MESSAGE);
+        }else{
+            nombre = nombre.toUpperCase().charAt(0) + nombre.substring(1, nombre.length());
+            if(descripcion.isEmpty()){
+                descripcion = "";
+            }else{
+                descripcion = descripcion.toUpperCase().charAt(0) + descripcion.substring(1, descripcion.length());
+            }
+            productoDto.agregarProducto(nombre, descripcion, precio, stock);
+            JOptionPane.showMessageDialog(null,
                 "Se agrego correctamente el Producto", "Mensaje de confirmación", 
                 JOptionPane.INFORMATION_MESSAGE, null);
+            txtnombre.setText("");
+            txtprecio.setText("");
+            txtstock.setText("");
+            txtdescripcion.setText("");
+        }
     }
     
     public void listarProductos(JTable tabla){
@@ -64,7 +102,7 @@ public class ProductoController{
             return;
         }
 
-        Producto producto = productoDto.buscarProducto(nombre);
+        Producto producto = productoDto.buscarProductoPorNombre(nombre);
         if (producto == null) {
             JOptionPane.showMessageDialog(null,
                     "Producto no encontrado. Verifique el nombre ingresado.",
@@ -73,6 +111,7 @@ public class ProductoController{
         } else {
             txtNumero.setText(String.valueOf(producto.getProductoID()));
             txtStock.setText(String.valueOf(producto.getStock()));
+            txtNombre.setText(producto.getNombre());
             txtDescripcion.setText(producto.getDescripcion());
             txtPrecio.setText(String.valueOf(producto.getPrecio()));
         }

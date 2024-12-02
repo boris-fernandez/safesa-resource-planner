@@ -25,7 +25,7 @@ public class ProveedorDto {
     // Método para agregar un proveedor
     public int agregarProveedor(String dni, String nombre, String apellidos,String telefono, String email){
         String queryPersona = "insert into Personas(nombre, apellidos, telefono, email) values(?,?,?,?)";
-        String queryProveedor = "insert into Proveedores(dni, personaId) values(?,?,?)";
+        String queryProveedor = "insert into Proveedores(dni, personaId) values(?,?)";
         int proveedorId = 0;
         try{
             Connection con = ConexionBD.getConexion(); 
@@ -41,10 +41,11 @@ public class ProveedorDto {
                 proveedorId = rs.getInt(1);
                 PreparedStatement psCliente = con.prepareStatement(queryProveedor);
                 psCliente.setString(1, dni);
-                psCliente.setInt(3, proveedorId);
+                psCliente.setInt(2, proveedorId);
                 psCliente.executeUpdate(); 
             }
         } catch(SQLException e){
+            e.printStackTrace();
         }
         return proveedorId;
     }
@@ -96,26 +97,29 @@ public class ProveedorDto {
         }
     }
     
-    //Buscar proveedor
-    public Proveedor buscarProveedor(int dni){
-        String query = "SELECT c.proveedorId, nombre, apellidos, telefono, email, dni" +
-               "FROM Personas p INNER JOIN Proveedores c ON p.personaId = c.personaId " +
-               "WHERE c.dni = ?";
+    public Proveedor buscarProveedor(String dni) {
+        String query = "SELECT c.proveedorId, p.nombre, p.apellidos, p.telefono, p.email, c.dni " +
+                       "FROM Personas p INNER JOIN Proveedores c ON p.personaId = c.personaId " +
+                       "WHERE c.dni = ?";
         var proveedor = new Proveedor();
-        try{
-            PreparedStatement buscar =conectar(query);
-            buscar.setInt(1, dni);
+        try {
+            PreparedStatement buscar = conectar(query);
+            buscar.setString(1, dni);
             var rs = buscar.executeQuery();
-            proveedor.setProveedorID(rs.getInt("clienteId"));
-            proveedor.setNombre(rs.getString("nombre"));
-            proveedor.setApellidos(rs.getString("apellidos"));
-            proveedor.setTelefono(rs.getString("telefono"));
-            proveedor.setEmail(rs.getString("email"));
-            proveedor.setDni(rs.getString("dni"));
-        }catch(SQLException e){
+            if (rs.next()) {
+                proveedor.setProveedorID(rs.getInt("proveedorId"));
+                proveedor.setNombre(rs.getString("nombre"));
+                proveedor.setApellidos(rs.getString("apellidos"));
+                proveedor.setTelefono(rs.getString("telefono"));
+                proveedor.setEmail(rs.getString("email"));
+                proveedor.setDni(rs.getString("dni"));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
         }
         return proveedor;
     }
+
     
     //Eliminar proveedor
     public void eliminarProveedor(int id){
@@ -126,6 +130,21 @@ public class ProveedorDto {
         var rowsAffected = eliminar.executeUpdate();
         } catch (SQLException e) {
         }
+    }
+    
+    //Obtener el ID de un cliente si ya existe, usando el DNI
+    int obtenerIdProveedor(String dni) {
+        String query = "SELECT personaId FROM Proveedores WHERE dni = ?";
+        try{
+            PreparedStatement stmt = conectar(query);
+            stmt.setString(1, dni);
+            var rs = stmt.executeQuery();
+            if (rs.next()) {
+                return rs.getInt("personaId");
+            }
+        } catch (SQLException e) {
+        }
+        return -1; 
     }
     
 }
