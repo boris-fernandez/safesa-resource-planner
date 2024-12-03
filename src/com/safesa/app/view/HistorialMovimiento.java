@@ -38,8 +38,7 @@ public final class HistorialMovimiento extends javax.swing.JFrame {
     }
     
     public void listar(){
-        var controller = new MovimientoController();
-        controller.listarMovimientos(jTable1);
+        movimientoController.listarMovimientos(jTable1);
     }
 
     /**
@@ -125,7 +124,7 @@ public final class HistorialMovimiento extends javax.swing.JFrame {
 
             },
             new String [] {
-                "N°", "Fecha", "Nombre Prod.", "Cantidad", "Monto", "C/P Nombre", "C/P DNI", "Movimiento"
+                "ID", "Fecha", "Nombre Prod.", "Cantidad", "Monto", "C/P Nombre", "C/P DNI", "Movimiento"
             }
         ) {
             boolean[] canEdit = new boolean [] {

@@ -50,17 +50,18 @@ public class ProveedorDto {
     }
 
     //Obtener todos los proveedor
-    public ArrayList<Proveedor> listaCliente() {
-        String query = "SELECT c.clienteId, nombre, apellidos, telefono, email, dni, fechaRegistro " +
-                              "FROM Personas p INNER JOIN Clientes c ON p.personaId = c.personaId";
+    public ArrayList<Proveedor> listaProveedores() {
+        String query = "SELECT c.proveedorId, p.nombre, p.apellidos, p.telefono, p.email, c.dni " +
+                    "FROM Personas p INNER JOIN Proveedores c ON p.personaId = c.personaId";
         ArrayList<Proveedor> proveedores = new ArrayList<>();
 
         try {
-            PreparedStatement buscar =conectar(query);
+            PreparedStatement buscar = conectar(query);
             var rs = buscar.executeQuery();
             while (rs.next()) {
-                var proveedor = new Proveedor();
-                proveedor.setProveedorID(rs.getInt("clienteId"));
+                Proveedor proveedor = new Proveedor();
+                // Aquí cambiamos 'clienteId' por 'proveedorId', ya que en la consulta seleccionamos c.proveedorId
+                proveedor.setProveedorID(rs.getInt("proveedorId"));
                 proveedor.setNombre(rs.getString("nombre"));
                 proveedor.setApellidos(rs.getString("apellidos"));
                 proveedor.setTelefono(rs.getString("telefono"));
@@ -73,40 +74,56 @@ public class ProveedorDto {
         }
         return proveedores;
     }
+
     
-    //Actualizar proveedor
-    public void actualizarProveedor(String nombre, String apellidos,String telefono, String email, String id){
-        String query  = """
+    public void actualizarProveedor(String nombre, String apellidos, String telefono, String email, String id) {
+        String query = """
                        UPDATE Personas 
                        SET nombre = ?,
-                       apellidos=?,
-                       telefono = ?, 
-                       email = ?
-                       WHERE personaId = ?""";
-     
-        try{
-            PreparedStatement buscar =conectar(query);          
+                           apellidos = ?,
+                           telefono = ?, 
+                           email = ?
+                       WHERE personaId = ?""";  // Asumimos que personaId es el identificador del proveedor en la tabla Personas
+
+        try {
+            // Establece la conexión y prepara la sentencia SQL
+            PreparedStatement buscar = conectar(query);
+
+            // Asignamos los parámetros a la consulta
             buscar.setString(1, nombre);
             buscar.setString(2, apellidos);
             buscar.setString(3, telefono);
             buscar.setString(4, email);
-            buscar.setString(5, id);
-            var rs = buscar.executeUpdate();
-        }catch(SQLException e){
+            buscar.setString(5, id); // El ID es pasado como entero
+
+            // Ejecuta la actualización
+            int rowsUpdated = buscar.executeUpdate(); 
+
+            // Verifica si la actualización fue exitosa
+            if (rowsUpdated > 0) {
+                System.out.println("Proveedor actualizado correctamente.");
+            } else {
+                System.out.println("No se encontró el proveedor con ese ID.");
+            }
+        } catch (SQLException e) {
+            e.printStackTrace(); // Imprime el error para depurar
         }
     }
+
+
     
     //Buscar proveedor
     public Proveedor buscarProveedor(String dni) {
         String query = "SELECT c.proveedorId, p.nombre, p.apellidos, p.telefono, p.email, c.dni " +
                        "FROM Personas p INNER JOIN Proveedores c ON p.personaId = c.personaId " +
                        "WHERE c.dni = ?";
-        var proveedor = new Proveedor();
+        Proveedor  proveedor = null;
         try {
             PreparedStatement buscar = conectar(query);
             buscar.setString(1, dni);
             var rs = buscar.executeQuery();
             if (rs.next()) {
+                proveedor = new Proveedor();
                 proveedor.setProveedorID(rs.getInt("proveedorId"));
                 proveedor.setNombre(rs.getString("nombre"));
                 proveedor.setApellidos(rs.getString("apellidos"));
@@ -115,7 +132,6 @@ public class ProveedorDto {
                 proveedor.setDni(rs.getString("dni"));
             }
         } catch (SQLException e) {
-            e.printStackTrace();  
         }
         return proveedor;
     }

@@ -78,14 +78,14 @@ public class ClienteDto {
     }
     
     //Actualizar Cliente
-    public void actualizarCliente(String nombre, String apellidos,String telefono, String email, int id){
+    public void actualizarCliente(String nombre, String apellidos,String telefono, String email, String id){
         String query  = """
                        UPDATE Personas 
                        SET nombre = ?,
                        apellidos=?,
                        telefono = ?, 
                        email = ?
-                       WHERE personaId = ?""";
+                       WHERE clienteId = ?""";
      
         try{
             PreparedStatement buscar =conectar(query);          
@@ -93,7 +93,7 @@ public class ClienteDto {
             buscar.setString(2, apellidos);
             buscar.setString(3, telefono);
             buscar.setString(4, email);
-            buscar.setInt(5, id);
+            buscar.setString(5, id);
             var rs = buscar.executeUpdate();
         }catch(SQLException e){
         }
@@ -120,7 +120,6 @@ public class ClienteDto {
                     cliente.setFechaRegistro(rs.getDate("fechaRegistro").toLocalDate());
                 }
         } catch (SQLException e) {
-            e.printStackTrace();  
         }
         return cliente;
     }

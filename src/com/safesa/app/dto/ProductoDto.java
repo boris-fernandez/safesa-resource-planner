@@ -130,7 +130,6 @@ public class ProductoDto {
             eliminarProducto.setInt(1, id);
             int filasAfectadas = eliminarProducto.executeUpdate();
         } catch (SQLException e) {
-            e.printStackTrace();
         }
     }
 

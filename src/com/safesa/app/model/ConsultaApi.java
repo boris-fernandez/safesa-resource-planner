@@ -17,10 +17,10 @@ import java.net.http.HttpResponse;
  * @author BORIS
  */
 public class ConsultaApi {
-    private String apikey;
+    private final String apikey;
 
     public ConsultaApi() {
-        this.apikey = "apikey";
+        this.apikey = "d5ade026-e59f-4250-8b35-d710ad8031bb";
     }
     
     public VerificarEmailDTO verificarEmail(String email) {

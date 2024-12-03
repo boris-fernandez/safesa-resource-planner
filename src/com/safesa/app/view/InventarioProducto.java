@@ -106,7 +106,7 @@ public final class InventarioProducto extends javax.swing.JFrame {
 
             },
             new String [] {
-                "N°", "Nombre", "Precio", "Stock", "Descripción"
+                "ID", "Nombre", "Precio", "Stock", "Descripción"
             }
         ) {
             boolean[] canEdit = new boolean [] {
@@ -209,7 +209,7 @@ public final class InventarioProducto extends javax.swing.JFrame {
 
         jLabel3.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
         jLabel3.setForeground(new java.awt.Color(0, 0, 0));
-        jLabel3.setText("N° :");
+        jLabel3.setText("ID :");
 
         jLabel5.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
         jLabel5.setForeground(new java.awt.Color(0, 0, 0));
