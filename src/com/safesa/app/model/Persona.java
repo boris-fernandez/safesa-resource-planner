@@ -77,11 +77,10 @@ public abstract class Persona{
     public boolean validarEmail(String email){
         var consultaApi = new ConsultaApi();
         VerificarEmailDTO verificar = consultaApi.verificarEmail(email);
-      
         if (verificar.emailRiskScore() > 79 && verificar.temporaryEmail()) {
-            return false;
+            return true;
         } 
-        return true;
+        return false;
     }
 
     @Override

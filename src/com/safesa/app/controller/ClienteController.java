@@ -78,34 +78,43 @@ public class ClienteController {
     public void actualizarCliente(JTextField txtNombre, JTextField txtApellido, JTextField txtTelefono,
             JTextField txtEmail, JTextField txtId, JTable tabla){
 
-    String idS = txtId.getText();
-    if(idS.isEmpty()){
-        JOptionPane.showMessageDialog(null,
-                "Para actualizar primero debes buscar un cliente por DNI",
-                "Mensaje de Advertencia",
-                JOptionPane.WARNING_MESSAGE);
-    } else {
-        if(clienteDto.buscarDni(idS)){
+        String idS = txtId.getText();
+        String nombre = txtNombre.getText();
+        String apellido = txtApellido.getText();
+        String telefono = txtTelefono.getText();
+        String email = txtEmail.getText();
+        if(idS.isEmpty()){
             JOptionPane.showMessageDialog(null,
-                    "El cliente con este DNI no existe en la base de datos",
-                    "Error",
-                    JOptionPane.ERROR_MESSAGE);
+                    "Para actualizar primero debes buscar un cliente por DNI",
+                    "Mensaje de Advertencia",
+                    JOptionPane.WARNING_MESSAGE);
+        }else if (telefono.length() != 9 || telefono.isEmpty()) {
+            JOptionPane.showMessageDialog(null,
+                    "El número de teléfono debe tener exactamente 9 dígitos",
+                    "Mensaje de Advertencia",
+                    JOptionPane.WARNING_MESSAGE);
+            return;
+        }else if (cliente.validarEmail(email)) {
+            JOptionPane.showMessageDialog(null,
+                    "El email ingresado es riesgoso. Intente con otro.",
+                    "Advertencia de Email Inválido",
+                    JOptionPane.WARNING_MESSAGE);
+            return;
+        }else if(clienteDto.buscarDni(idS)){
+                JOptionPane.showMessageDialog(null,
+                        "El cliente con este DNI no existe en la base de datos",
+                        "Error",
+                        JOptionPane.ERROR_MESSAGE);
         } else {
-            String nombre = txtNombre.getText();
-            String apellido = txtApellido.getText();
-            String telefono = txtTelefono.getText();
-            String email = txtEmail.getText();
-            
-            // Actualizar cliente
-            clienteDto.actualizarCliente(nombre, apellido, telefono, email, idS);
-            JOptionPane.showMessageDialog(null,
-                    "Se actualizó correctamente el cliente",
-                    "Mensaje de Éxito",
-                    JOptionPane.INFORMATION_MESSAGE);
-            listarClientes(tabla);  // Actualizar la lista de clientes
+                clienteDto.actualizarCliente(nombre, apellido, telefono, email, idS);
+                listarClientes(tabla); 
+                JOptionPane.showMessageDialog(null,
+                        "Se actualizó correctamente el cliente",
+                        "Mensaje de Éxito",
+                        JOptionPane.INFORMATION_MESSAGE);
+                
         }
     }
-}
 
     
     public void limpiarCampos(JTextField txtNombre, JTextField txtApellido,JTextField txtTelefono,

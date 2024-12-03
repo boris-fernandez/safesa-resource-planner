@@ -76,7 +76,7 @@ public class MovimientoDto {
         int personaID = proveedor.obtenerIdProveedor(dni);
         if (personaID == -1) { 
             var cliente = new ClienteDto();
-            personaID = cliente.agregarCliente(dni, nombre, apellidos, telefono, email);
+            personaID = proveedor.agregarProveedor(dni, nombre, apellidos, telefono, email);
         }
 
         var producto = new ProductoDto();
@@ -112,19 +112,18 @@ public class MovimientoDto {
     // Obtener todos los Movimientos
     public ArrayList<SimpleEntry<Movimiento, Cliente>> obtenerMovimientos() {
         String query = """
-                    SELECT m.movimientoId, Pro.nombre AS productoNombre, m.cantidad, m.monto, 
-                                           per.nombre AS personaNombre, c.dni, m.tipoMovimiento, 
-                                           per.nombre AS proveedorNombre,
-                                           fecha
-                                    FROM Movimientos m
-                                    INNER JOIN Productos Pro ON m.productoId = Pro.productoId
-                                    INNER JOIN Personas per ON per.personaId = m.personaId
-                                    LEFT JOIN Clientes c ON per.personaId = c.personaId
-                                    LEFT JOIN Proveedores p ON per.personaId = p.personaId""";
+                SELECT m.movimientoId, Pro.nombre AS productoNombre, m.cantidad, m.monto, 
+                               per.nombre AS personaNombre, c.dni AS clienteDni, p.dni AS proveedorDni,
+                               m.tipoMovimiento, fecha
+                        FROM Movimientos m
+                        INNER JOIN Productos Pro ON m.productoId = Pro.productoId
+                        INNER JOIN Personas per ON per.personaId = m.personaId
+                        LEFT JOIN Clientes c ON per.personaId = c.personaId
+                        LEFT JOIN Proveedores p ON per.personaId = p.personaId""";
 
         ArrayList<SimpleEntry<Movimiento, Cliente>> movimientos = new ArrayList<>();
 
-        try { 
+        try {
             PreparedStatement buscar = conectar(query);
             var rs = buscar.executeQuery();
             while (rs.next()) {
@@ -137,15 +136,24 @@ public class MovimientoDto {
                 movimiento.setCantidad(rs.getInt("cantidad"));
                 movimiento.setMonto(rs.getDouble("monto"));
                 movimiento.setTipoMovimiento(rs.getString("tipoMovimiento"));
-                cliente.setNombre(rs.getString("personaNombre")); 
-                cliente.setDni(rs.getString("dni"));
+                cliente.setNombre(rs.getString("personaNombre"));
+                String clienteDni = rs.getString("clienteDni");
+                String proveedorDni = rs.getString("proveedorDni");
+                if (clienteDni != null) {
+                    cliente.setDni(clienteDni);
+                } else if (proveedorDni != null) {
+                    cliente.setDni(proveedorDni);
+                }
+
                 movimiento.setProducto(producto);
                 movimientos.add(new SimpleEntry<>(movimiento, cliente));
             }
         } catch (SQLException e) {
+            e.printStackTrace();
         }
         return movimientos;
     }
+
 
     //Eliminar Movimineto
     public void eliminarMovimiento(int id){
@@ -212,54 +220,54 @@ public class MovimientoDto {
         return movimientoEncontrado;
     }
    
-   //Obtener el monto total de ingreso
-   public double montoTotalIngreso(){
-        String query = "SELECT SUM(monto) AS [MontoIngreso] FROM Movimientos WHERE tipoMovimiento = 'Ingreso'";
-        double totalIngreso = 0;
-        try{
-            PreparedStatement buscar = conectar(query);
-            var rs = buscar.executeQuery();
-            if(rs.next()){
-                totalIngreso = rs.getDouble("MontoIngreso");
-            }
-        }catch(SQLException e){
-        }
-        return totalIngreso;
-   }
+    //Obtener el monto total de ingreso
+    public double montoTotalIngreso(){
+         String query = "SELECT SUM(monto) AS [MontoIngreso] FROM Movimientos WHERE tipoMovimiento = 'Ingreso'";
+         double totalIngreso = 0;
+         try{
+             PreparedStatement buscar = conectar(query);
+             var rs = buscar.executeQuery();
+             if(rs.next()){
+                 totalIngreso = rs.getDouble("MontoIngreso");
+             }
+         }catch(SQLException e){
+         }
+         return totalIngreso;
+    }
    
-   //Obtener el monto total de egreso
-   public double montoTotalEgreso(){
-        String query = "SELECT SUM(monto) AS [MontoEgreso] FROM Movimientos WHERE tipoMovimiento = 'Egreso'";
-        double totalIngreso = 0;
-        try{
-            PreparedStatement buscar = conectar(query);
-            var rs = buscar.executeQuery();
-            if(rs.next()){
-                totalIngreso = rs.getDouble("MontoEgreso");
-            }
-        }catch(SQLException e){
-        }
-        return totalIngreso;
-   }
+    //Obtener el monto total de egreso
+    public double montoTotalEgreso(){
+         String query = "SELECT SUM(monto) AS [MontoEgreso] FROM Movimientos WHERE tipoMovimiento = 'Egreso'";
+         double totalIngreso = 0;
+         try{
+             PreparedStatement buscar = conectar(query);
+             var rs = buscar.executeQuery();
+             if(rs.next()){
+                 totalIngreso = rs.getDouble("MontoEgreso");
+             }
+         }catch(SQLException e){
+         }
+         return totalIngreso;
+    }
    
-   //Obtener el monto total general
-   public double montoTotalGenera(){
-        String query = """
-                       SELECT 
-                           (SUM(CASE WHEN tipoMovimiento = 'Ingreso' THEN monto ELSE 0 END) -
-                            SUM(CASE WHEN tipoMovimiento = 'Egreso' THEN monto ELSE 0 END)) AS TotalGeneral
-                       FROM Movimientos;""";
-        double totalIngreso = 0;
-        try{
-            PreparedStatement buscar = conectar(query);
-            var rs = buscar.executeQuery();
-            if(rs.next()){
-                totalIngreso = rs.getDouble("TotalGeneral");
-            }
-        }catch(SQLException e){
-        }
-        return totalIngreso;
-   }
+    //Obtener el monto total general
+    public double montoTotalGenera(){
+         String query = """
+                        SELECT 
+                            (SUM(CASE WHEN tipoMovimiento = 'Ingreso' THEN monto ELSE 0 END) -
+                             SUM(CASE WHEN tipoMovimiento = 'Egreso' THEN monto ELSE 0 END)) AS TotalGeneral
+                        FROM Movimientos;""";
+         double totalIngreso = 0;
+         try{
+             PreparedStatement buscar = conectar(query);
+             var rs = buscar.executeQuery();
+             if(rs.next()){
+                 totalIngreso = rs.getDouble("TotalGeneral");
+             }
+         }catch(SQLException e){
+         }
+         return totalIngreso;
+    }
    
     
     

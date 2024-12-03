@@ -75,42 +75,28 @@ public class ProveedorDto {
         return proveedores;
     }
 
-    
+    //Actualizar proveedor
     public void actualizarProveedor(String nombre, String apellidos, String telefono, String email, String id) {
         String query = """
                        UPDATE Personas 
-                       SET nombre = ?,
-                           apellidos = ?,
+                       SET nombre = ?, 
+                           apellidos = ?, 
                            telefono = ?, 
-                           email = ?
-                       WHERE personaId = ?""";  // Asumimos que personaId es el identificador del proveedor en la tabla Personas
-
+                           email = ? 
+                       WHERE personaId = (SELECT personaId FROM Proveedores WHERE proveedorId = ?)
+                       """;
         try {
-            // Establece la conexión y prepara la sentencia SQL
             PreparedStatement buscar = conectar(query);
 
-            // Asignamos los parámetros a la consulta
             buscar.setString(1, nombre);
             buscar.setString(2, apellidos);
             buscar.setString(3, telefono);
             buscar.setString(4, email);
-            buscar.setString(5, id); // El ID es pasado como entero
-
-            // Ejecuta la actualización
-            int rowsUpdated = buscar.executeUpdate(); 
-
-            // Verifica si la actualización fue exitosa
-            if (rowsUpdated > 0) {
-                System.out.println("Proveedor actualizado correctamente.");
-            } else {
-                System.out.println("No se encontró el proveedor con ese ID.");
-            }
+            buscar.setString(5, id);
+            var rowsUpdated = buscar.executeUpdate(); 
         } catch (SQLException e) {
-            e.printStackTrace(); // Imprime el error para depurar
         }
     }
-
-
     
     //Buscar proveedor
     public Proveedor buscarProveedor(String dni) {

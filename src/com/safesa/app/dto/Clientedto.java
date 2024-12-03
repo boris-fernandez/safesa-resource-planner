@@ -78,26 +78,28 @@ public class ClienteDto {
     }
     
     //Actualizar Cliente
-    public void actualizarCliente(String nombre, String apellidos,String telefono, String email, String id){
-        String query  = """
+    public void actualizarCliente(String nombre, String apellidos, String telefono, String email, String clienteId) {
+        String query = """
                        UPDATE Personas 
-                       SET nombre = ?,
-                       apellidos=?,
-                       telefono = ?, 
-                       email = ?
-                       WHERE clienteId = ?""";
-     
-        try{
-            PreparedStatement buscar =conectar(query);          
+                       SET nombre = ?, 
+                           apellidos = ?, 
+                           telefono = ?, 
+                           email = ? 
+                       WHERE personaId = (SELECT personaId FROM Clientes WHERE clienteId = ?)
+                       """;
+        try {
+            PreparedStatement buscar = conectar(query);
             buscar.setString(1, nombre);
             buscar.setString(2, apellidos);
             buscar.setString(3, telefono);
             buscar.setString(4, email);
-            buscar.setString(5, id);
-            var rs = buscar.executeUpdate();
-        }catch(SQLException e){
+            buscar.setString(5, clienteId);
+            int filasActualizadas = buscar.executeUpdate();
+        } catch (SQLException e) {
         }
     }
+
+
     
     //Buscar cliente
     public Cliente buscarCliente(String dni) {

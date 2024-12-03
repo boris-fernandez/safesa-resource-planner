@@ -5,7 +5,6 @@
 package com.safesa.app.controller;
 
 import com.safesa.app.dto.ProveedorDto;
-import com.safesa.app.model.Cliente;
 import com.safesa.app.model.Proveedor;
 import java.util.ArrayList;
 import javax.swing.JOptionPane;
@@ -76,26 +75,41 @@ public class ProveedorController {
 
    public void actualizarProveedor(JTextField txtNombre, JTextField txtApellido, JTextField txtTelefono,
                                 JTextField txtEmail, JTextField txtId, JTable tabla) {
+        var proveedor = new Proveedor();
         String idS = txtId.getText();
+        String nombre = txtNombre.getText();
+        String apellido = txtApellido.getText();
+        String telefono = txtTelefono.getText();
+        String email = txtEmail.getText();
+
         if (idS.isEmpty()) {
             JOptionPane.showMessageDialog(null,
-                    "Para actualizar primero debes buscar un proveedor por DNI",
+                    "Para actualizar, primero debes buscar un proveedor por DNI",
                     "Mensaje de Advertencia",
                     JOptionPane.WARNING_MESSAGE);
-        } else {
-            String nombre = txtNombre.getText();
-            String apellido = txtApellido.getText();
-            String telefono = txtTelefono.getText();
-            String email = txtEmail.getText();
-            String id = txtId.getText();
-            proveedorDto.actualizarProveedor(nombre, apellido, telefono, email, id);
-            listarProveedores(tabla);
+            return;
+        }else if (telefono.length() != 9 || telefono.isEmpty()) {
             JOptionPane.showMessageDialog(null,
-                    "Se actualizó correctamente el proveedor",
-                    "Mensaje de Confirmación",
-                    JOptionPane.INFORMATION_MESSAGE);
-        }
+                    "El número de teléfono debe tener exactamente 9 dígitos",
+                    "Mensaje de Advertencia",
+                    JOptionPane.WARNING_MESSAGE);
+            return;
+        }else if (proveedor.validarEmail(email)) {
+            JOptionPane.showMessageDialog(null,
+                    "El email ingresado no es válido. Intente con otro.",
+                    "Advertencia de Email Inválido",
+                    JOptionPane.WARNING_MESSAGE);
+            return;
+        }else{
+            proveedorDto.actualizarProveedor(nombre, apellido, telefono, email, idS);
+        listarProveedores(tabla);
+        JOptionPane.showMessageDialog(null,
+                "Proveedor actualizado correctamente",
+                "Mensaje de Confirmación",
+                JOptionPane.INFORMATION_MESSAGE);
+        }    
     }
+
 
 
     public void limpiarCampos(JTextField txtNombre, JTextField txtApellido, JTextField txtTelefono,

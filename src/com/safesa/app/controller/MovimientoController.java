@@ -28,7 +28,6 @@ public class MovimientoController {
    private final ProductoDto productoDto;
    private final ClienteDto cd;
    private final ProveedorDto pd;
-   private final Movimiento movimiento;
 
    
     public MovimientoController(){
@@ -36,7 +35,6 @@ public class MovimientoController {
         productoDto = new ProductoDto();
         cd = new ClienteDto();
         pd = new ProveedorDto();
-        movimiento = new Movimiento();
     }
 
     public void agregarIngreso(JComboBox<String> nombreProd, JTextField txtCantidad, JTextField txtMonto, 
@@ -65,7 +63,7 @@ public class MovimientoController {
                    "Advertencia de longuitud del telefono", 
                    JOptionPane.WARNING_MESSAGE, 
                    null);
-       }else if(!cliente.validarEmail(emailCliente)){
+       }else if(cliente.validarEmail(emailCliente)){
            JOptionPane.showMessageDialog(null, 
                    "El Email ingresado es riesgoso pruebe con otro valido", 
                    "Advertencia de email riesgoso", 
@@ -179,7 +177,7 @@ public class MovimientoController {
                     "Advertencia de longuitud del telefono", 
                     JOptionPane.WARNING_MESSAGE, 
                     null);
-        }else if(!proveedor.validarEmail(emailProveedor)){
+        }else if(proveedor.validarEmail(emailProveedor)){
             JOptionPane.showMessageDialog(null, 
                     "El Email ingresado es riesgoso pruebe con otro valido", 
                     "Advertencia de email riesgoso", 
@@ -321,6 +319,7 @@ public class MovimientoController {
         txtNombreCP.setText("");
         txtMonto.setText("");
         txtDNI.setText("");
+        txtFecha.setText("");
     }
     
     public void totalEgreso(JTextField txtTotalEgreso){
